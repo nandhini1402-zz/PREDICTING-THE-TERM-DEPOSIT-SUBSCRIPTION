@@ -1,2 +1,4 @@
 # PREDICTING-THE-TERM-DEPOSIT-SUBSCRIPTION
 The dataset contains information about a marketing campaign conducted by a Portuguese banking institution, where the primary method of communication was phone calls. The goal of the campaign was to encourage clients to subscribe to a bank term deposit. 
+A Portuguese bank has experienced a decline in revenue, which it traced back to a decrease in the frequency of client deposits. The bank realizes that term deposits can offer a reliable source of funding by allowing it to hold onto a deposit for a fixed period and invest in higher-yielding financial products. To achieve this, the bank plans to identify its existing clients who are most likely to subscribe to term deposits and focus its marketing efforts on them. The bank uses various client data, such as demographic information, transaction history, and banking habits, to predict the likelihood of a client subscribing to a term deposit.
+\
