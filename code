@@ -1,0 +1,221 @@
+code
+import pandas as pd
+df = pd.read_csv("C:\\Users\\nandh\\Downloads\\bank-full.csv (3)\\bank-full.csv")
+
+import pandas as pd
+import numpy as np
+import seaborn as sns
+import matplotlib.pyplot as plt
+%matplotlib inline
+import statsmodels.api as sm
+from scipy import stats
+from sklearn import model_selection
+from sklearn.model_selection import train_test_split
+from sklearn import metrics
+import plotly.express as px
+
+
+from sklearn.linear_model import LogisticRegression
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.naive_bayes import GaussianNB
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.ensemble import RandomForestClassifier
+
+
+from sklearn.metrics import classification_report,confusion_matrix
+from sklearn.metrics import confusion_matrix, accuracy_score, f1_score, precision_score, recall_score
+from sklearn.metrics import accuracy_score
+from sklearn import preprocessing
+
+df.head()
+df.tail()
+df.shape
+df.info()
+
+encoding = {
+                "job" :      {"unknown": -1, "blue-collar": 1, "management":2 , "technician": 3, "admin.": 4,"services": 5, 
+                         "retired": 6, "self-employed": 7, "entrepreneur": 8, "unemployed": 9, "housemaid": 10,
+                         "student": 11},
+                "marital":   {"single": 1, "married": 2 ,"divorced": 3},
+                "education": {"unknown":-1, "primary": 1, "secondary": 2 ,"tertiary": 3},
+                "default":   {"no": 0, "yes": 1},
+                "housing":   {"no": 0, "yes": 1},
+                "loan":      {"no": 0, "yes": 1},
+                "contact":   {"unknown": -1 , "cellular": 1, "telephone": 2},
+                "month":     {"jan": 1, "feb":2 , "mar": 3, "apr": 4,"may": 5, "jun": 6, "jul": 7, "aug": 8, "sep": 9, "oct": 10, "nov": 11, "dec": 12},
+                "poutcome":  {"unknown": -1, "failure": 0, "success": 1, "other": 2},
+                "Target":    {"no": 0, "yes": 1} 
+                    }
+
+df=df.replace(encoding)
+df.head()
+
+Q1 =  df.quantile(0.25) # 1st Quartile
+Q3 =  df.quantile(0.75) # 3rd Quartile
+IQR = Q3 - Q1# Interquartile range
+print(IQR)
+
+# Creating scatter plot
+fig = px.scatter(df, x="age", y="balance",color='contact')
+
+# Customizing plot 
+fig.update_layout(
+    title="Bivariate Analysis: Age vs. Balance",
+    xaxis_title="Age",
+    yaxis_title="Balance"
+)
+
+# Show plot
+fig.show()
+
+X = df.drop('Target', axis=1)
+y = df[['Target']]
+X_train_scaled = preprocessing.scale(x_train)
+X_test_scaled = preprocessing.scale(X_test)
+
+#Fitting the model
+LR = LogisticRegression(solver = 'lbfgs')#lbfgs-Limited-memory Broyden–Fletcher–Goldfarb–Shanno
+LR.fit(X_train, y_train.values.ravel())
+
+# Predicting for test set
+LR_y_pred=LR.predict(X_test)
+LR_Score= LR.score(X_test, y_test)
+
+base_model_results = pd.DataFrame([['Logistic Regression', LR_ScoreAccuracy, LR_PrecisionScore,
+                                LR_RecallScore, LR_f1_score, cross_validation_result.mean(), cross_validation_result.std()]], 
+                              columns = ['Model', 'Accuracy', 'Precision', 'Recall', 'F1 Score', 'Mean', 'Std Deviation'])
+
+print('\nLogistic Regression classification Report : \n',metrics.classification_report(y_test, LR_y_pred))
+
+
+# Create a confusion matrix for logistic regression
+cm = confusion_matrix(y_test, LR.predict(X_test))
+
+# Create a heatmap visualization of the confusion matrix
+sns.heatmap(cm, annot=True, cmap='Blues', fmt='g', xticklabels=['Not Subscribed', 'Subscribed'], yticklabels=['Not Subscribed', 'Subscribed'])
+plt.title('Confusion Matrix for Logistic Regression')
+plt.xlabel('Predicted Class')
+plt.ylabel('True Class')
+plt.show()
+
+knn
+KNN = KNeighborsClassifier(n_neighbors=9, weights = 'uniform', metric='euclidean')
+KNN.fit(X_train, y_train.values.ravel())
+
+# Predicting for test set
+KNN_y_pred= KNN.predict(X_test)
+KNN_Score = KNN.score(X_test, y_test)
+
+#PRECISION SCORE,RECALL AND F1 SCORE
+KNN_PrecisionScore= precision_score(y_test, KNN_y_pred)
+KNN_RecallScore= recall_score(y_test, KNN_y_pred)
+KNN_F1= f1_score(y_test, KNN_y_pred)
+
+#CROSS VALIDATION RESULT
+Cross_validation_result = model_selection.cross_val_score(KNN, X_train, y_train.values.ravel(), cv=kfold, scoring='accuracy')
+KNN_models_results = pd.DataFrame([['K-Nearest Neighbors', KNN_ScoreAccuracy, KNN_PrecisionScore,KNN_RecallScore, KNN_F1,
+                                    cross_validation_result.mean(), cross_validation_result.std()]], 
+                              columns = ['Model', 'Accuracy', 'Precision', 'Recall', 'F1 Score', 'Mean', 'Std Deviation'])
+base_model_results = base_model_results.append(KNN_models_results, ignore_index = True)
+
+print('\nKNN CLASSIFICATION REPORT : \n',metrics.classification_report(y_test, KNN_y_pred))
+# Create a confusion matrix for KNN classifier
+cm = confusion_matrix(y_test, KNN.predict(X_test))
+
+# Create a heatmap visualization of the confusion matrix
+sns.heatmap(cm, annot=True, cmap='Blues', fmt='g', xticklabels=['Not Subscribed', 'Subscribed'], yticklabels=['Not Subscribed', 'Subscribed'])
+plt.title('Confusion Matrix for KNN Classifier')
+plt.xlabel('Predicted Class')
+plt.ylabel('True Class')
+plt.show()
+
+NAIVE BAYES¶
+GNB = GaussianNB()
+GNB.fit(X_train, y_train.values.ravel())
+
+# Predicting for test set
+GNB_y_pred= GNB.predict(X_test)
+GNB_Score=GNB.score(X_test, y_test)
+
+#PRECISION,RECALL AND F1 SCORE
+GNB_PrecisionScore= precision_score(y_test, GNB_y_pred)
+GNB_RecallScore= recall_score(y_test, GNB_y_pred)
+GNB_F1=f1_score(y_test, GNB_y_pred)
+
+#cross validation and model results
+cross_validation_result = model_selection.cross_val_score(GNB, X_train, y_train.values.ravel(), cv=kfold, scoring='accuracy')
+
+GNB_models_results = pd.DataFrame([['Naive Bayes (Gaussian)', GNB_ScoreAccuracy, GNB_PrecisionScore,
+                                GNB_RecallScore, GNB_F1, cross_validation_result.mean(), cross_validation_result.std()]], 
+                              columns = ['Model', 'Accuracy', 'Precision', 'Recall', 'F1 Score', 'Mean', 'Std Deviation'])
+
+#confusion matrix
+y_pred = GNB.predict(X_test)
+
+# Generate confusion matrix
+cm = confusion_matrix(y_test, y_pred)
+print(cm)
+True positives (TP) = 770: This is the number of instances that were actually positive and were correctly predicted as positive by the model.
+False positives (FP) = 1460: This is the number of instances that were actually negative but were incorrectly predicted as positive by the model.
+False negatives (FN) = 764: This is the number of instances that were actually positive but were incorrectly predicted as negative by the model.
+True negatives (TN) = 10570: This is the number of instances that were actually negative and were correctly predicted as negative by the model.
+
+DECISION TREE
+DTREE = DecisionTreeClassifier(criterion = "entropy", random_state = 100,max_depth=3, min_samples_leaf=5)
+DTREE.fit(X_train, y_train)
+
+#PRECISION SCORE,RECALL AND F1 SCORE
+DTREE_PrecisionScore = precision_score(y_test, DTREE_y_pred)
+DTREE_RecallScore = recall_score(y_test, DTREE_y_pred)
+DTREE_F1 = f1_score(y_test, DTREE_y_pred
+
+#cross validation result
+cross_validation_result = model_selection.cross_val_score(DTREE, X_train, y_train, cv=kfold, scoring='accuracy')
+DTREE_models_results = pd.DataFrame([['Decision Tree ', DTREE_ScoreAccuracy, DTREE_PrecisionScore, DTREE_RecallScore,
+                                 DTREE_F1, cross_validation_result.mean(), cross_validation_result.std()]], 
+                              columns = ['Model', 'Accuracy', 'Precision', 'Recall', 'F1 Score', 'Mean', 'Std Deviation'])
+
+GRADIENT BOOSTING¶
+from sklearn.ensemble import GradientBoostingClassifier
+GB  = GradientBoostingClassifier(n_estimators = 50,random_state=1)
+GB.fit(X_train, y_train.values.ravel())
+
+#Predicting for test set
+GB_y_pred= GB.predict(X_test)
+GB_Score= GB.score(X_test, y_test)
+
+#precision score,recall and f1 score
+GB_PrecisionScore = precision_score(y_test, GB_y_pred)
+GB_RecallScore = recall_score(y_test, GB_y_pred)
+GB_F1 = f1_score(y_test,GB_y_pred)
+
+GB_results = pd.DataFrame([['Gradient Boosting ', GB_ScoreAccuracy,GB_PrecisionScore,GB_RecallScore, GB_F1,
+                                      GB_cross_validation_result.mean(), GB_cross_validation_result.std()]], 
+                              columns = ['Model', 'Accuracy', 'Precision', 'Recall', 'F1 Score', 'Mean', 'Std Deviation'])
+
+base_model_results = base_model_results.append(GB_results, ignore_index = True)
+base_model_results
+
+print('\n GB classification Report : \n',metrics.classification_report(y_test, GB_y_pred))
+
+# Create a confusion matrix for logistic regression
+cm = confusion_matrix(y_test, GB.predict(X_test))
+
+# Create a heatmap visualization of the confusion matrix
+sns.heatmap(cm, annot=True, cmap='Blues', fmt='g', xticklabels=['Not Subscribed', 'Subscribed'], yticklabels=['Not Subscribed', 'Subscribed'])
+plt.title('Confusion Matrix for Gradient Boosting')
+plt.xlabel('Predicted Class')
+plt.ylabel('True Class')
+plt.show()
+
+
+CONCLUSION
+1)It seems that both the Logistic Decision Tree, Gradient Boosting and Random Forest algorithm are performing similarly well on this dataset. With an accuracy of over 90%, it suggests that these models are able to predict the outcome variable, deposit subscription, with a high degree of accuracy.
+
+2)the algorithm with the highest precision is Gradient Boosting, with a precision score of 0.659924. This means that out of all the positive predictions made by the algorithm, about 66% were actually true positive
+
+3)the algorithm with the highest recall is Naive Bayes (Gaussian), with a recall score of 0.501956. This means that out of all the actual positive instances in the dataset, the algorithm was able to correctly identify about 50% of them.
+
+4)The algorithm with the highest F1 score is Random Forest, with an F1 score of 0.5. The F1 score is a harmonic mean of precision and recall, and provides a balanced measure of these two metrics. A high F1 score indicates that the algorithm has both high precision and high recall.
+
+Among the models, Gradient Boosting has the highest accuracy of 0.905559, followed by Random Forest with an accuracy of 0.904453 and Logistic Regression with an accuracy of 0.902241.Overall, Gradient Boosting and Random Forest are the top-performing models based on their high accuracy and F1 score
